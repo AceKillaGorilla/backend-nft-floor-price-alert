@@ -31,6 +31,10 @@ const client = new Client(dbConfig);
 
 client.connect();
 
+app.get("/", async (req, res) => {
+  res.sendFile(path.join(__dirname + "/../index.html"));
+});
+
 // POST /notifications
 app.post("/notifications", async (req, res) => {
   const {
@@ -58,6 +62,26 @@ app.post("/notifications", async (req, res) => {
     res.status(200).json({
       status: "success",
       data: submitNotification,
+    });
+  }
+});
+
+// POST /collection
+app.post("/collection", async (req, res) => {
+  const { collection_id, collection_slug, collection_name } = req.body;
+  const uploadCollection = await client.query(
+    "INSERT INTO collections(collection_slug, collection_name) VALUES ($1, $2) returning *;",
+    [collection_slug, collection_name]
+  );
+  if (collection_slug.length === 0 || collection_name.length === 0) {
+    res.status(400).json({
+      status: "failure",
+      message: "missing collection slug or name",
+    });
+  } else {
+    res.status(200).json({
+      status: "success",
+      data: uploadCollection,
     });
   }
 });
