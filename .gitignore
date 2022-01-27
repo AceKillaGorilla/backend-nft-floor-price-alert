@@ -1,3 +1,6 @@
 .env
 dist
 node_modules
+.env.heroku
+.vscode/last.sql
+.vscode/settings.json
