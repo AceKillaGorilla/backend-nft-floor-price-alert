@@ -99,7 +99,7 @@ app.get("/collections", async (req, res) => {
   } else {
     res.status(200).json({
       status: "success",
-      data: collectionsList.rows,
+      data: collectionsList,
     });
   }
 });
