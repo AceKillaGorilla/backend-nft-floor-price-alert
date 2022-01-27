@@ -33,41 +33,52 @@ client.connect();
 
 // POST /notifications
 app.post("/notifications", async (req, res) => {
-  const { collection_id, collection_slug, set_price, notification_type, email} = req.body;
+  const {
+    collection_id,
+    collection_slug,
+    set_price,
+    notification_type,
+    email,
+  } = req.body;
   const submitNotification = await client.query(
     "INSERT INTO notifications (collection_id, collection_slug, set_price, notification_type, email) values ($1, $2, $3, $4, $5) returning *;",
-    [collection_id, collection_slug, set_price, notification_type, email] 
+    [collection_id, collection_slug, set_price, notification_type, email]
   );
-  if (email.length === 0 || set_price === 0 || collection_id.length === 0 || notification_type === 0) {
+  if (
+    email.length === 0 ||
+    set_price === 0 ||
+    collection_id.length === 0 ||
+    notification_type === 0
+  ) {
     res.status(400).json({
       status: "failure",
-      message: "Fill in missing fields"
-    })
+      message: "Fill in missing fields",
+    });
   } else {
     res.status(200).json({
-    status: "success",
-    data: submitNotification,
-  });
-}
+      status: "success",
+      data: submitNotification,
+    });
+  }
 });
 
 // GET /collections
 app.get("/collections", async (req, res) => {
   const collectionsList = await client.query(
     "SELECT collection_name FROM collections;"
-  )
-  if(collectionsList.rowCount === 0){
+  );
+  if (collectionsList.rowCount === 0) {
     res.status(400).json({
       status: "failure",
-      message: "empty response"
-    })
+      message: "empty response",
+    });
   } else {
-      res.status(200).json({
-        status: "success",
-        data: collectionsList.rows
-      })
+    res.status(200).json({
+      status: "success",
+      data: collectionsList.rows,
+    });
   }
-})
+});
 
 // GET /floor_price/:collection_id
 app.get("/floor_price/:collection_id", async (req, res) => {
@@ -75,21 +86,20 @@ app.get("/floor_price/:collection_id", async (req, res) => {
     "SELECT floor_price FROM floor_prices WHERE floor_price.collection_id = $1 ORDER BY snapshot_time DESC LIMIT 1;",
     [req.params.collection_id]
   );
-  if(floorPrice.rowCount === 0){
+  if (floorPrice.rowCount === 0) {
     res.status(400).json({
       status: "failure",
-      message: "empty response"
-    })
+      message: "empty response",
+    });
   } else {
-      res.status(200).json({
-        status: "success",
-        data: floorPrice
-      })
+    res.status(200).json({
+      status: "success",
+      data: floorPrice,
+    });
   }
-})
+});
 
 //POST
-
 
 //Start the server on the given port
 const port = process.env.PORT;
